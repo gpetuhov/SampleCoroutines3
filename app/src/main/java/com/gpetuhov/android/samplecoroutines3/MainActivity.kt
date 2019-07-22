@@ -3,6 +3,11 @@ package com.gpetuhov.android.samplecoroutines3
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,8 +23,11 @@ class MainActivity : AppCompatActivity() {
     // === Private methods ===
 
     private fun loadUserWithGlobalScope() {
-        // TODO
-        showUserName("Global Scope Bob")
+        GlobalScope.launch(Dispatchers.Main) {
+            val userOne = GlobalScope.async(Dispatchers.IO) { fetchUser() }
+            showUserName("Global Scope ${userOne.await()}") // back on UI thread
+            Timber.tag("MainActivity").d("Show user name")
+        }
     }
 
     private fun loadUserWithActivityScope() {
@@ -34,5 +42,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun showUserName(name: String) {
         user_name.text = name
+    }
+
+    private fun fetchUser(): String {
+        Thread.sleep(5000)
+        return "Bob"
     }
 }
