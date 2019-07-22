@@ -10,15 +10,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        load_button.setOnClickListener { loadUser() }
+        load_global_button.setOnClickListener { loadUserWithGlobalScope() }
+        load_local_button.setOnClickListener { loadUserWithActivityScope() }
         reset_button.setOnClickListener { resetUser() }
     }
 
     // === Private methods ===
 
-    private fun loadUser() {
+    private fun loadUserWithGlobalScope() {
         // TODO
-        showUserName("Bob")
+        showUserName("Global Scope Bob")
+    }
+
+    private fun loadUserWithActivityScope() {
+        // TODO
+        showUserName("Activity Scope Bob")
     }
 
     private fun resetUser() {
