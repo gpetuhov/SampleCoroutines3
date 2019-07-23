@@ -14,9 +14,11 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         private const val TAG = "MainActivity"
     }
 
+    // We have to define CoroutineContext for MainActivity.
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job  // We can use + sign, because CoroutineContext overrides plus operator
 
+    // This job represents running coroutine.
     private lateinit var job: Job
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,10 +69,23 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun loadUserWithActivityScope() {
+        // This coroutine uses MainActivity's scope.
+        // So if MainActivity is destroyed, the coroutine is canceled.
+        // Notice that launch and async are using "this" (MainActivity) as CoroutineScope.
+        // Job for the coroutine is saved into job property,
+        // because we included it into CoroutineContext of MainActivity.
+        // Coroutine will run on main thread,
+        // because we defined Dispatchers.Main in CoroutineContext of MainActivity.
         launch {
             Timber.tag(TAG).d("Start load user")
+
+            // fetchUser() will run on background thread, when await() is called
             val user = async(Dispatchers.IO) { fetchUser() }
+
             showUserName("Activity Scope ${user.await()}")
+
+            // This log statement will show only if MainActivity is NOT destroyed,
+            // while coroutine is running.
             Timber.tag(TAG).d("Show user name")
         }
     }
