@@ -107,7 +107,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
             // fetchUser() will run on background thread, when await() is called
             val user = async(Dispatchers.IO) { fetchUser() }
-
             showUserName("Activity Scope ${user.await()}")
 
             // This log statement will show only if MainActivity is NOT destroyed,
@@ -128,4 +127,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         Thread.sleep(5000)
         return "Bob"
     }
+
+    // We could also turn fetchUser() from blocking function to suspending like this:
+//    private suspend fun fetchUserSuspending(): String = withContext(Dispatchers.IO) {
+//        Thread.sleep(5000)
+//        "Bob"
+//    }
+    // And then we could use it simply like this:
+//    launch {
+//        val user = fetchUserSuspending()
+//        showUserName(user)
+//    }
 }

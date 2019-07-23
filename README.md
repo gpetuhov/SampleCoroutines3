@@ -14,3 +14,5 @@ https://blog.mindorks.com/mastering-kotlin-coroutines-in-android-step-by-step-gu
 https://medium.com/@elizarov/explicit-concurrency-67a8e8fd9b25
 
 https://medium.com/@elizarov/blocking-threads-suspending-coroutines-d33e11bf4761
+
+https://medium.com/@elizarov/the-reason-to-avoid-globalscope-835337445abc
