@@ -3,25 +3,38 @@ package com.gpetuhov.android.samplecoroutines3
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import timber.log.Timber
+import kotlin.coroutines.CoroutineContext
 
-class MainActivity : AppCompatActivity() {
+// For coroutines to live only during MainActivity lifecycle we need to implement CoroutineScope
+class MainActivity : AppCompatActivity(), CoroutineScope {
 
     companion object {
         private const val TAG = "MainActivity"
     }
 
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job  // We can use + sign, because CoroutineContext overrides plus operator
+
+    private lateinit var job: Job
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Don't forget to create Job in onCreate()
+        job = Job()
+
         load_global_button.setOnClickListener { loadUserWithGlobalScope() }
         load_local_button.setOnClickListener { loadUserWithActivityScope() }
         reset_button.setOnClickListener { resetUser() }
+    }
+
+    override fun onDestroy() {
+        // Don't forget to cancel Job in onDestroy()
+        job.cancel()
+        super.onDestroy()
     }
 
     // === Private methods ===
@@ -54,8 +67,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadUserWithActivityScope() {
-        // TODO
-        showUserName("Activity Scope Bob")
+        launch {
+            Timber.tag(TAG).d("Start load user")
+            val user = async(Dispatchers.IO) { fetchUser() }
+            showUserName("Activity Scope ${user.await()}")
+            Timber.tag(TAG).d("Show user name")
+        }
     }
 
     private fun resetUser() {
