@@ -16,10 +16,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
     // We have to define CoroutineContext for MainActivity.
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job  // We can use + sign, because CoroutineContext overrides plus operator
+        get() = Dispatchers.Main + job + handler // We can use + sign, because CoroutineContext overrides plus operator
 
     // This job represents running coroutine.
     private lateinit var job: Job
+
+    // We can create our own exception handler like this
+    private val handler = CoroutineExceptionHandler { _, exception ->
+        Timber.tag(TAG).d("$exception handled!")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,14 +55,16 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         // because they will be delivered to the old activity, which is not on screen any more.
         // This could lead to memory leaks.
 
-        // Despatchers.Main tells coroutine to run on main thread, because here we update UI
-        GlobalScope.launch(Dispatchers.Main) {
+        // Despatchers.Main tells coroutine to run on main thread, because here we update UI.
+        // We also provide our own exception handler.
+        GlobalScope.launch(Dispatchers.Main + handler) {
             Timber.tag(TAG).d("Start load user")
 
             // Here we use Dispatchers.IO, so fetchUser is executed in the thread pool,
             // specifically designed for blocking IO operations.
             // This coroutine will not start immediately, because async is used.
             // The coroutine will start when await is called.
+            // We use async here instead of launch, because fetchUser() returns some result.
             val user = GlobalScope.async(Dispatchers.IO) { fetchUser() }
 
             // Here we start fetchUser() on background thread. Results are returned to main thread.
