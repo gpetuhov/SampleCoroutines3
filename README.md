@@ -1,5 +1,5 @@
 # SampleCoroutines3
-Using coroutine context and scope.
+Using coroutine scope and context.
 
 ## Requirements
 * Android Studio 3.6 Canary 5
@@ -10,3 +10,7 @@ Using coroutine context and scope.
 
 ## References
 https://blog.mindorks.com/mastering-kotlin-coroutines-in-android-step-by-step-guide
+
+https://medium.com/@elizarov/explicit-concurrency-67a8e8fd9b25
+
+https://medium.com/@elizarov/blocking-threads-suspending-coroutines-d33e11bf4761

@@ -57,11 +57,16 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
         // Despatchers.Main tells coroutine to run on main thread, because here we update UI.
         // We also provide our own exception handler.
+
+        // Notice that launch and async are called "coroutine builders".
+        // Every function that is declared as extension on CoroutineScope returns immediately,
+        // but performs its actions concurrently with the rest of the program.
         GlobalScope.launch(Dispatchers.Main + handler) {
             Timber.tag(TAG).d("Start load user")
 
             // Here we use Dispatchers.IO, so fetchUser is executed in the thread pool,
-            // specifically designed for blocking IO operations.
+            // specifically designed for blocking IO operations
+            // (for computational tasks Dispatchers.Default should be used).
             // This coroutine will not start immediately, because async is used.
             // The coroutine will start when await is called.
             // We use async here instead of launch, because fetchUser() returns some result.
@@ -69,6 +74,10 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
             // Here we start fetchUser() on background thread. Results are returned to main thread.
             showUserName("Global Scope ${user.await()}")
+
+            // We could do it another way by using withContext instead of async like this:
+//            val user = withContext(Dispatchers.IO) { fetchUser() }
+//            showUserName("Global Scope $user")
 
             // This log statement will show even if MainActivity is destroyed
             Timber.tag(TAG).d("Show user name")
