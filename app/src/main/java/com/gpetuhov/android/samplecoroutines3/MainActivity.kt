@@ -73,6 +73,16 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             // This log statement will show even if MainActivity is destroyed
             Timber.tag(TAG).d("Show user name")
         }
+
+        // Notice that here exceptions in async are also handled, because it is a child job of launch,
+        // which runs with MainActivity's CoroutineScope, for which we provided our own exception handler.
+        // If we want to handle exceptions in async alone, we should use try-catch block like this:
+//        val deferredUser = GlobalScope.async { fetchUser() }
+//        try {
+//            val user = deferredUser.await()
+//        } catch (exception: Exception) {
+//            Timber.tag(TAG).d("$exception handled!")
+//        }
     }
 
     private fun loadUserWithActivityScope() {
